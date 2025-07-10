@@ -10,6 +10,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   String _currency = 'USD';
   bool _notifications = true;
+  final Color blue = const Color(0xFF2979FF);
 
   void _showAboutDialog() {
     showAboutDialog(
@@ -55,59 +56,115 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Settings', style: TextStyle(color: Colors.black)),
+        centerTitle: true,
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text('General', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          ),
-          ListTile(
-            leading: const Icon(Icons.attach_money),
-            title: const Text('Currency'),
-            subtitle: Text(_currency),
-            trailing: DropdownButton<String>(
-              value: _currency,
-              items: const [
-                DropdownMenuItem(value: 'USD', child: Text('USD')),
-                DropdownMenuItem(value: 'EUR', child: Text('EUR')),
-                DropdownMenuItem(value: 'INR', child: Text('INR')),
-                DropdownMenuItem(value: 'GBP', child: Text('GBP')),
-              ],
-              onChanged: (value) {
-                if (value != null) setState(() => _currency = value);
-              },
+          // User info card
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: blue.withOpacity(0.1),
+                    child: const Icon(Icons.person, color: Colors.black, size: 36),
+                  ),
+                  const SizedBox(width: 18),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('Steven Paul', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      SizedBox(height: 4),
+                      Text('steven.paul@email.com', style: TextStyle(color: Colors.grey, fontSize: 14)),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          SwitchListTile(
-            secondary: const Icon(Icons.notifications),
-            title: const Text('Notifications'),
-            value: _notifications,
-            onChanged: (val) => setState(() => _notifications = val),
+          const SizedBox(height: 24),
+          // General settings card
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.attach_money, color: blue),
+                    title: const Text('Currency'),
+                    trailing: DropdownButton<String>(
+                      value: _currency,
+                      underline: const SizedBox(),
+                      borderRadius: BorderRadius.circular(16),
+                      items: const [
+                        DropdownMenuItem(value: 'USD', child: Text('USD')),
+                        DropdownMenuItem(value: 'EUR', child: Text('EUR')),
+                        DropdownMenuItem(value: 'INR', child: Text('INR')),
+                        DropdownMenuItem(value: 'GBP', child: Text('GBP')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) setState(() => _currency = value);
+                      },
+                    ),
+                  ),
+                  SwitchListTile(
+                    secondary: Icon(Icons.notifications, color: blue),
+                    title: const Text('Notifications'),
+                    value: _notifications,
+                    onChanged: (val) => setState(() => _notifications = val),
+                    activeColor: blue,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                ],
+              ),
+            ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text('Data', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 24),
+          // Data card
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.backup, color: blue),
+                    title: const Text('Backup'),
+                    onTap: _showBackupDialog,
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.restore, color: blue),
+                    title: const Text('Restore'),
+                    onTap: _showRestoreDialog,
+                  ),
+                ],
+              ),
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.backup),
-            title: const Text('Backup'),
-            onTap: _showBackupDialog,
-          ),
-          ListTile(
-            leading: const Icon(Icons.restore),
-            title: const Text('Restore'),
-            onTap: _showRestoreDialog,
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Text('About', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('About'),
-            onTap: _showAboutDialog,
+          const SizedBox(height: 24),
+          // About card
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: ListTile(
+              leading: Icon(Icons.info_outline, color: blue),
+              title: const Text('About'),
+              onTap: _showAboutDialog,
+            ),
           ),
         ],
       ),

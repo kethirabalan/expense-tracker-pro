@@ -1,122 +1,110 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../models/category_data.dart';
 
 class OverviewScreen extends StatelessWidget {
   const OverviewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data
-    final double monthlySpending = 2450;
-    final double lastMonthSpending = 2130;
-    final double percentChange = ((monthlySpending - lastMonthSpending) / lastMonthSpending) * 100;
-    final Map<String, double> categorySpending = {
-      'food': 800,
-      'transport': 400,
-      'entertainment': 300,
-      'utilities': 250,
-      'shopping': 700,
-    };
+    final double balance = 301.95;
+    final List<double> monthlyTrends = [200, 250, 180, 220, 301.95];
+    final List<String> months = ['jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    final List<Map<String, dynamic>> quickActions = [
+      {'icon': Icons.account_balance_wallet, 'label': 'balance'},
+      {'icon': Icons.trending_up, 'label': 'income'},
+      {'icon': Icons.trending_down, 'label': 'expenses'},
+      {'icon': Icons.fastfood, 'label': 'food'},
+      {'icon': Icons.flight, 'label': 'travel'},
+      {'icon': Icons.emoji_emotions, 'label': 'fun'},
+      {'icon': Icons.beach_access, 'label': 'retire'},
+    ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Spending Overview')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Monthly Spending', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text(
-                      ' 24${monthlySpending.toStringAsFixed(0)}',
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'This Month ',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        Text(
-                          (percentChange >= 0 ? '+' : '') + percentChange.toStringAsFixed(1) + '%',
-                          style: TextStyle(
-                            color: percentChange >= 0 ? Colors.green : Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 24),
+            // Quick actions (as in the leftmost reference screen)
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12,
+              runSpacing: 8,
+              children: quickActions.map((action) => Chip(
+                backgroundColor: Colors.grey[100],
+                label: Text(action['label'], style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w500)),
+                avatar: Icon(action['icon'], color: Colors.black54, size: 20),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+              )).toList(),
             ),
             const SizedBox(height: 24),
-            Card(
+            // Large balance
+            Text(
+              ' 24${balance.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                letterSpacing: -2,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            // Month selector (minimal, just text for now)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('this month', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+                const SizedBox(width: 8),
+                Icon(Icons.keyboard_arrow_down, color: Colors.black, size: 20),
+              ],
+            ),
+            const SizedBox(height: 24),
+            // Simple line chart
+            SizedBox(
+              height: 120,
               child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Spending by Category', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 220,
-                      child: BarChart(
-                        BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          maxY: 1000,
-                          barTouchData: BarTouchData(enabled: false),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (double value, TitleMeta meta) {
-                                  final keys = categorySpending.keys.toList();
-                                  if (value.toInt() < 0 || value.toInt() >= keys.length) return const SizedBox();
-                                  final cat = CategoryData.categories.firstWhere((c) => c.id == keys[value.toInt()], orElse: () => CategoryData.categories.last);
-                                  return Column(
-                                    children: [
-                                      Icon(cat.icon, size: 20),
-                                      Text(cat.name.split(' ')[0], style: const TextStyle(fontSize: 12)),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          barGroups: List.generate(categorySpending.length, (i) {
-                            return BarChartGroupData(
-                              x: i,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: categorySpending.values.elementAt(i),
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 24,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ],
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: LineChart(
+                  LineChartData(
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: List.generate(monthlyTrends.length, (i) => FlSpot(i.toDouble(), monthlyTrends[i])),
+                        isCurved: true,
+                        color: Colors.black,
+                        barWidth: 3,
+                        dotData: FlDotData(show: false),
+                      ),
+                    ],
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) {
+                            if (value.toInt() < 0 || value.toInt() >= months.length) return const SizedBox();
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(months[value.toInt()], style: TextStyle(color: Colors.grey[600], fontSize: 13)),
                             );
-                          }),
+                          },
                         ),
                       ),
                     ),
-                  ],
+                    borderData: FlBorderData(show: false),
+                    gridData: FlGridData(show: false),
+                    minY: 0,
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            // Minimal divider
+            Container(height: 1, color: Colors.grey[200], margin: const EdgeInsets.symmetric(horizontal: 16)),
+            // You can add more minimal widgets here (e.g., recent transactions preview)
           ],
         ),
       ),
