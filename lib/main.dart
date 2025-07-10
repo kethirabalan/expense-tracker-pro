@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'models/transaction_model.dart';
-import 'package:provider/provider.dart';
+import 'screens/overview_screen.dart';
+import 'screens/transactions_screen.dart';
+import 'screens/budget_screen.dart';
+import 'screens/insights_screen.dart';
+import 'screens/settings_screen.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  Hive.registerAdapter(TransactionModelAdapter());
-  await Hive.openBox<TransactionModel>('transactions');
-
+void main() {
   runApp(const ExpenseTrackerApp());
 }
 
@@ -19,10 +16,55 @@ class ExpenseTrackerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expense Tracker',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system,
-      home: const Placeholder(), // Will be replaced with HomeScreen
+      theme: ThemeData(
+        colorSchemeSeed: const Color(0xFF0175C2),
+        useMaterial3: true,
+        brightness: Brightness.light,
+      ),
+      home: const MainNavigation(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
+
+  @override
+  State<MainNavigation> createState() => _MainNavigationState();
+}
+
+class _MainNavigationState extends State<MainNavigation> {
+  int _selectedIndex = 0;
+  static const List<Widget> _screens = <Widget>[
+    OverviewScreen(),
+    TransactionsScreen(),
+    BudgetScreen(),
+    InsightsScreen(),
+    SettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: _onItemTapped,
+        destinations: const <NavigationDestination>[
+          NavigationDestination(icon: Icon(Icons.home), label: 'Overview'),
+          NavigationDestination(icon: Icon(Icons.list), label: 'Transactions'),
+          NavigationDestination(icon: Icon(Icons.savings), label: 'Budget'),
+          NavigationDestination(icon: Icon(Icons.insights), label: 'Insights'),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+        ],
+      ),
     );
   }
 }
