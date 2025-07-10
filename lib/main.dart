@@ -4,6 +4,7 @@ import 'screens/transactions_screen.dart';
 import 'screens/budget_screen.dart';
 import 'screens/insights_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/startup_screen.dart';
 
 void main() {
   runApp(const ExpenseTrackerApp());
@@ -21,8 +22,31 @@ class ExpenseTrackerApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.light,
       ),
-      home: const MainNavigation(),
       debugShowCheckedModeBanner: false,
+      home: StartupScreen(
+        onGetStarted: () {
+          // Use a navigator key or context to push MainNavigation
+          runApp(const _MainApp());
+        },
+      ),
+    );
+  }
+}
+
+class _MainApp extends StatelessWidget {
+  const _MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Expense Tracker',
+      theme: ThemeData(
+        colorSchemeSeed: const Color(0xFF0175C2),
+        useMaterial3: true,
+        brightness: Brightness.light,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: const MainNavigation(),
     );
   }
 }
