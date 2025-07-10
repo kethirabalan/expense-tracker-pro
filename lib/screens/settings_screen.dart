@@ -63,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text('Settings', style: TextStyle(color: Colors.black)),
+        // title: const Text('Settings', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Stack(

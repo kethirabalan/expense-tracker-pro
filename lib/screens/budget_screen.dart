@@ -23,7 +23,7 @@ class BudgetScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text('Budget', style: TextStyle(color: Colors.black)),
+        // title: const Text('Budget', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Stack(
